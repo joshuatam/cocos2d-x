@@ -189,7 +189,7 @@ var TerrainSimple = TerrainTestDemo.extend({
 });
 
 var TerrainWalkThru = (function(){
-    const PlayerState = {
+    var PlayerState = {
         LEFT : 0,
         RIGHT : 1,
         IDLE : 2,
@@ -197,8 +197,8 @@ var TerrainWalkThru = (function(){
         BACKWARD : 4
     };
 
-    const PLAYER_HEIGHT = 0;
-    const camera_offset = cc.math.vec3(0, 45, 60);
+    var PLAYER_HEIGHT = 0;
+    var camera_offset = cc.math.vec3(0, 45, 60);
 
     var Player = jsb.Sprite3D.extend({
         _targetPos:null,
@@ -332,9 +332,9 @@ var TerrainWalkThru = (function(){
             this._player.setScale(0.08);
             this._player.y = this._terrain.getHeight(this._player.x, this._player.getVertexZ()) + PLAYER_HEIGHT;
 
-            var animation = jsb.Animation3D.create("Sprite3DTest/girl.c3b", "Take 001");
+            var animation = new jsb.Animation3D("Sprite3DTest/girl.c3b", "Take 001");
             if(animation){
-                var animate = jsb.Animate3D.create(animation);
+                var animate = new jsb.Animate3D(animation);
                 this._player.runAction(cc.repeatForever(animate));
             }
 

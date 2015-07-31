@@ -43,6 +43,10 @@ THE SOFTWARE.
 #include "physics3d/CCPhysics3DComponent.h"
 #endif
 
+#if CC_USE_NAVMESH
+#include "navmesh/CCNavMesh.h"
+#endif
+
 NS_CC_BEGIN
 
 Scene::Scene()
@@ -53,6 +57,10 @@ Scene::Scene()
 #if CC_USE_3D_PHYSICS && CC_ENABLE_BULLET_INTEGRATION
     _physics3DWorld = nullptr;
     _physics3dDebugCamera = nullptr;
+#endif
+#if CC_USE_NAVMESH
+    _navMesh = nullptr;
+    _navMeshDebugCamera = nullptr;
 #endif
     _ignoreAnchorPointForPosition = true;
     setAnchorPoint(Vec2(0.5f, 0.5f));
@@ -76,9 +84,24 @@ Scene::~Scene()
     CC_SAFE_RELEASE(_physics3DWorld);
     CC_SAFE_RELEASE(_physics3dDebugCamera);
 #endif
+#if CC_USE_NAVMESH
+    CC_SAFE_RELEASE(_navMesh);
+#endif
     Director::getInstance()->getEventDispatcher()->removeEventListener(_event);
     CC_SAFE_RELEASE(_event);
 }
+
+#if CC_USE_NAVMESH
+void Scene::setNavMesh(NavMesh* navMesh)
+{
+    if (_navMesh != navMesh)
+    {
+        CC_SAFE_RETAIN(navMesh);
+        CC_SAFE_RELEASE(_navMesh);
+        _navMesh = navMesh;
+    }
+}
+#endif
 
 bool Scene::init()
 {
@@ -140,18 +163,23 @@ static bool camera_cmp(const Camera* a, const Camera* b)
     return a->getRenderOrder() < b->getRenderOrder();
 }
 
-void Scene::render(Renderer* renderer)
+const std::vector<Camera*>& Scene::getCameras()
 {
-    auto director = Director::getInstance();
-    Camera* defaultCamera = nullptr;
-    const auto& transform = getNodeToParentTransform();
     if (_cameraOrderDirty)
     {
         stable_sort(_cameras.begin(), _cameras.end(), camera_cmp);
         _cameraOrderDirty = false;
     }
-    
-    for (const auto& camera : _cameras)
+    return _cameras;
+}
+
+void Scene::render(Renderer* renderer)
+{
+    auto director = Director::getInstance();
+    Camera* defaultCamera = nullptr;
+    const auto& transform = getNodeToParentTransform();
+
+    for (const auto& camera : getCameras())
     {
         if (!camera->isVisible())
             continue;
@@ -169,6 +197,12 @@ void Scene::render(Renderer* renderer)
         camera->clearBackground(1.0);
         //visit the scene
         visit(renderer, transform, 0);
+#if CC_USE_NAVMESH
+        if (_navMesh && _navMeshDebugCamera == camera)
+        {
+            _navMesh->debugDraw(renderer);
+        }
+#endif
         
         renderer->render();
         
@@ -211,6 +245,16 @@ void Scene::setPhysics3DDebugCamera(Camera* camera)
     CC_SAFE_RELEASE(_physics3dDebugCamera);
     _physics3dDebugCamera = camera;
 }
+#endif
+
+#if CC_USE_NAVMESH
+void Scene::setNavMeshDebugCamera(Camera *camera)
+{
+    CC_SAFE_RETAIN(camera);
+    CC_SAFE_RELEASE(_navMeshDebugCamera);
+    _navMeshDebugCamera = camera;
+}
+
 #endif
 
 #if (CC_USE_PHYSICS || (CC_USE_3D_PHYSICS && CC_ENABLE_BULLET_INTEGRATION))
@@ -296,6 +340,30 @@ void Scene::addChildToPhysicsWorld(Node* child)
 #endif
 }
 
+#endif
+
+#if (CC_USE_PHYSICS || (CC_USE_3D_PHYSICS && CC_ENABLE_BULLET_INTEGRATION) || CC_USE_NAVMESH)
+void Scene::stepPhysicsAndNavigation(float deltaTime)
+{
+#if CC_USE_PHYSICS
+    if (_physicsWorld && _physicsWorld->isAutoStep())
+    {
+        _physicsWorld->update(deltaTime, false);
+    }
+#endif
+#if CC_USE_3D_PHYSICS && CC_ENABLE_BULLET_INTEGRATION
+    if (_physics3DWorld)
+    {
+        _physics3DWorld->stepSimulate(deltaTime);
+    }
+#endif
+#if CC_USE_NAVMESH
+    if (_navMesh)
+    {
+        _navMesh->update(deltaTime);
+    }
+#endif
+}
 #endif
 
 NS_CC_END

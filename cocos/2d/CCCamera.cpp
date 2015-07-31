@@ -33,6 +33,7 @@
 #include "renderer/CCGLProgramCache.h"
 #include "renderer/ccGLStateCache.h"
 #include "renderer/CCFrameBuffer.h"
+#include "renderer/CCRenderState.h"
 
 NS_CC_BEGIN
 
@@ -151,12 +152,8 @@ void Camera::lookAt(const Vec3& lookAtPos, const Vec3& up)
     
     Quaternion  quaternion;
     Quaternion::createFromRotationMatrix(rotation,&quaternion);
-
-    float rotx = atan2f(2 * (quaternion.w * quaternion.x + quaternion.y * quaternion.z), 1 - 2 * (quaternion.x * quaternion.x + quaternion.y * quaternion.y));
-    float roty = asin(clampf(2 * (quaternion.w * quaternion.y - quaternion.z * quaternion.x) , -1.0f , 1.0f));
-    float rotz = -atan2(2 * (quaternion.w * quaternion.z + quaternion.x * quaternion.y) , 1 - 2 * (quaternion.y * quaternion.y + quaternion.z * quaternion.z));
-    
-    setRotation3D(Vec3(CC_RADIANS_TO_DEGREES(rotx),CC_RADIANS_TO_DEGREES(roty),CC_RADIANS_TO_DEGREES(rotz)));
+    quaternion.normalize();
+    setRotationQuat(quaternion);
 }
 
 const Mat4& Camera::getViewProjectionMatrix() const
@@ -241,7 +238,7 @@ Vec2 Camera::project(const Vec3& src) const
     Vec4 clipPos;
     getViewProjectionMatrix().transformVector(Vec4(src.x, src.y, src.z, 1.0f), &clipPos);
     
-    CCASSERT(clipPos.w != 0.0f, "");
+    CCASSERT(clipPos.w != 0.0f, "clipPos.w can't be 0.0f!");
     float ndcX = clipPos.x / clipPos.w;
     float ndcY = clipPos.y / clipPos.w;
     
@@ -258,7 +255,7 @@ Vec2 Camera::projectGL(const Vec3& src) const
     Vec4 clipPos;
     getViewProjectionMatrix().transformVector(Vec4(src.x, src.y, src.z, 1.0f), &clipPos);
     
-    CCASSERT(clipPos.w != 0.0f, "");
+    CCASSERT(clipPos.w != 0.0f, "clipPos.w can't be 0.0f!");
     float ndcX = clipPos.x / clipPos.w;
     float ndcY = clipPos.y / clipPos.w;
     
@@ -409,14 +406,16 @@ void Camera::clearBackground(float depth)
     {
         glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
         glStencilMask(0);
+
         oldDepthTest = glIsEnabled(GL_DEPTH_TEST);
         glGetIntegerv(GL_DEPTH_FUNC, &oldDepthFunc);
         glGetBooleanv(GL_DEPTH_WRITEMASK, &oldDepthMask);
+
         glDepthMask(GL_TRUE);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_ALWAYS);
     }
-    
+
     //draw
     static V3F_C4B_T2F_Quad quad;
     quad.bl.vertices = Vec3(-1,-1,0);
@@ -463,12 +462,21 @@ void Camera::clearBackground(float depth)
             glDisable(GL_DEPTH_TEST);
         }
         glDepthFunc(oldDepthFunc);
+
         if(GL_FALSE == oldDepthMask)
         {
             glDepthMask(GL_FALSE);
         }
-        
+
+        /* IMPORTANT: We only need to update the states that are not restored.
+         Since we don't know what was the previous value of the mask, we update the RenderState
+         after setting it.
+         The other values don't need to be updated since they were restored to their original values
+         */
         glStencilMask(0xFFFFF);
+//        RenderState::StateBlock::_defaultState->setStencilWrite(0xFFFFF);
+
+        /* BUG: RenderState does not support glColorMask yet. */
         glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     }
 }
@@ -529,6 +537,12 @@ int Camera::getRenderOrder() const
     }
     result += _depth;
     return result;
+}
+
+void Camera::visit(Renderer* renderer, const Mat4 &parentTransform, uint32_t parentFlags)
+{
+    _viewProjectionUpdated = _transformUpdated;
+    return Node::visit(renderer, parentTransform, parentFlags);
 }
 
 NS_CC_END

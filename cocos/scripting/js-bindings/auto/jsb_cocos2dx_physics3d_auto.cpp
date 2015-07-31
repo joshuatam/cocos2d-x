@@ -2,6 +2,7 @@
 #if CC_USE_3D_PHYSICS && CC_ENABLE_BULLET_INTEGRATION
 #include "cocos2d_specifics.hpp"
 #include "CCPhysics3D.h"
+#include "physics3d/jsb_cocos2dx_physics3d_manual.h"
 
 template<class T>
 static bool dummy_constructor(JSContext *cx, uint32_t argc, jsval *vp) {
@@ -228,11 +229,9 @@ bool js_cocos2dx_physics3d_Physics3DShape_createSphere(JSContext *cx, uint32_t a
 }
 
 
-
 void js_cocos2d_Physics3DShape_finalize(JSFreeOp *fop, JSObject *obj) {
     CCLOGINFO("jsbindings: finalizing JS object %p (Physics3DShape)", obj);
 }
-
 void js_register_cocos2dx_physics3d_Physics3DShape(JSContext *cx, JS::HandleObject global) {
     jsb_cocos2d_Physics3DShape_class = (JSClass *)calloc(1, sizeof(JSClass));
     jsb_cocos2d_Physics3DShape_class->name = "Physics3DShape";
@@ -500,11 +499,9 @@ bool js_cocos2dx_physics3d_Physics3DObject_needCollisionCallback(JSContext *cx, 
     return false;
 }
 
-
 void js_cocos2d_Physics3DObject_finalize(JSFreeOp *fop, JSObject *obj) {
     CCLOGINFO("jsbindings: finalizing JS object %p (Physics3DObject)", obj);
 }
-
 void js_register_cocos2dx_physics3d_Physics3DObject(JSContext *cx, JS::HandleObject global) {
     jsb_cocos2d_Physics3DObject_class = (JSClass *)calloc(1, sizeof(JSClass));
     jsb_cocos2d_Physics3DObject_class->name = "Physics3DObject";
@@ -1021,8 +1018,7 @@ bool js_cocos2dx_physics3d_Physics3DRigidBody_init(JSContext *cx, uint32_t argc,
     JSB_PRECONDITION2( cobj, cx, false, "js_cocos2dx_physics3d_Physics3DRigidBody_init : Invalid Native Object");
     if (argc == 1) {
         cocos2d::Physics3DRigidBodyDes* arg0;
-        #pragma warning NO CONVERSION TO NATIVE FOR Physics3DRigidBodyDes*
-		ok = false;
+        cocos2d::Physics3DRigidBodyDes tempObj;arg0=&tempObj;ok &= jsval_to_physics3DRigidBodyDes(cx, args.get(0), arg0);
         JSB_PRECONDITION2(ok, cx, false, "js_cocos2dx_physics3d_Physics3DRigidBody_init : Error processing arguments");
         bool ret = cobj->init(arg0);
         jsval jsret = JSVAL_NULL;
@@ -1612,13 +1608,11 @@ bool js_cocos2dx_physics3d_Physics3DRigidBody_constructor(JSContext *cx, uint32_
     return true;
 }
 
-
 extern JSObject *jsb_cocos2d_Physics3DObject_prototype;
 
 void js_cocos2d_Physics3DRigidBody_finalize(JSFreeOp *fop, JSObject *obj) {
     CCLOGINFO("jsbindings: finalizing JS object %p (Physics3DRigidBody)", obj);
 }
-
 void js_register_cocos2dx_physics3d_Physics3DRigidBody(JSContext *cx, JS::HandleObject global) {
     jsb_cocos2d_Physics3DRigidBody_class = (JSClass *)calloc(1, sizeof(JSClass));
     jsb_cocos2d_Physics3DRigidBody_class->name = "Physics3DRigidBody";
@@ -2036,13 +2030,11 @@ bool js_cocos2dx_physics3d_Physics3DComponent_constructor(JSContext *cx, uint32_
     return true;
 }
 
-
 extern JSObject *jsb_cocos2d_Component_prototype;
 
 void js_cocos2d_Physics3DComponent_finalize(JSFreeOp *fop, JSObject *obj) {
     CCLOGINFO("jsbindings: finalizing JS object %p (Physics3DComponent)", obj);
 }
-
 void js_register_cocos2dx_physics3d_Physics3DComponent(JSContext *cx, JS::HandleObject global) {
     jsb_cocos2d_Physics3DComponent_class = (JSClass *)calloc(1, sizeof(JSClass));
     jsb_cocos2d_Physics3DComponent_class->name = "Physics3DComponent";
@@ -2215,13 +2207,11 @@ bool js_cocos2dx_physics3d_PhysicsSprite3D_constructor(JSContext *cx, uint32_t a
     return true;
 }
 
-
 extern JSObject *jsb_cocos2d_Sprite3D_prototype;
 
 void js_cocos2d_PhysicsSprite3D_finalize(JSFreeOp *fop, JSObject *obj) {
     CCLOGINFO("jsbindings: finalizing JS object %p (PhysicsSprite3D)", obj);
 }
-
 void js_register_cocos2dx_physics3d_PhysicsSprite3D(JSContext *cx, JS::HandleObject global) {
     jsb_cocos2d_PhysicsSprite3D_class = (JSClass *)calloc(1, sizeof(JSClass));
     jsb_cocos2d_PhysicsSprite3D_class->name = "PhysicsSprite3D";
@@ -2355,6 +2345,22 @@ bool js_cocos2dx_physics3d_Physics3DWorld_collisionChecking(JSContext *cx, uint3
     JS_ReportError(cx, "js_cocos2dx_physics3d_Physics3DWorld_collisionChecking : wrong number of arguments: %d, was expecting %d", argc, 0);
     return false;
 }
+bool js_cocos2dx_physics3d_Physics3DWorld_setGhostPairCallback(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    js_proxy_t *proxy = jsb_get_js_proxy(obj);
+    cocos2d::Physics3DWorld* cobj = (cocos2d::Physics3DWorld *)(proxy ? proxy->ptr : NULL);
+    JSB_PRECONDITION2( cobj, cx, false, "js_cocos2dx_physics3d_Physics3DWorld_setGhostPairCallback : Invalid Native Object");
+    if (argc == 0) {
+        cobj->setGhostPairCallback();
+        args.rval().setUndefined();
+        return true;
+    }
+
+    JS_ReportError(cx, "js_cocos2dx_physics3d_Physics3DWorld_setGhostPairCallback : wrong number of arguments: %d, was expecting %d", argc, 0);
+    return false;
+}
 bool js_cocos2dx_physics3d_Physics3DWorld_init(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
@@ -2426,33 +2432,6 @@ bool js_cocos2dx_physics3d_Physics3DWorld_removeAllPhysics3DConstraints(JSContex
     }
 
     JS_ReportError(cx, "js_cocos2dx_physics3d_Physics3DWorld_removeAllPhysics3DConstraints : wrong number of arguments: %d, was expecting %d", argc, 0);
-    return false;
-}
-bool js_cocos2dx_physics3d_Physics3DWorld_rayCast(JSContext *cx, uint32_t argc, jsval *vp)
-{
-    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    bool ok = true;
-    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    js_proxy_t *proxy = jsb_get_js_proxy(obj);
-    cocos2d::Physics3DWorld* cobj = (cocos2d::Physics3DWorld *)(proxy ? proxy->ptr : NULL);
-    JSB_PRECONDITION2( cobj, cx, false, "js_cocos2dx_physics3d_Physics3DWorld_rayCast : Invalid Native Object");
-    if (argc == 3) {
-        cocos2d::Vec3 arg0;
-        cocos2d::Vec3 arg1;
-        cocos2d::Physics3DWorld::HitResult* arg2;
-        ok &= jsval_to_vector3(cx, args.get(0), &arg0);
-        ok &= jsval_to_vector3(cx, args.get(1), &arg1);
-        #pragma warning NO CONVERSION TO NATIVE FOR HitResult*
-		ok = false;
-        JSB_PRECONDITION2(ok, cx, false, "js_cocos2dx_physics3d_Physics3DWorld_rayCast : Error processing arguments");
-        bool ret = cobj->rayCast(arg0, arg1, arg2);
-        jsval jsret = JSVAL_NULL;
-        jsret = BOOLEAN_TO_JSVAL(ret);
-        args.rval().set(jsret);
-        return true;
-    }
-
-    JS_ReportError(cx, "js_cocos2dx_physics3d_Physics3DWorld_rayCast : wrong number of arguments: %d, was expecting %d", argc, 3);
     return false;
 }
 bool js_cocos2dx_physics3d_Physics3DWorld_getGravity(JSContext *cx, uint32_t argc, jsval *vp)
@@ -2780,12 +2759,9 @@ bool js_cocos2dx_physics3d_Physics3DWorld_constructor(JSContext *cx, uint32_t ar
     return true;
 }
 
-
-
 void js_cocos2d_Physics3DWorld_finalize(JSFreeOp *fop, JSObject *obj) {
     CCLOGINFO("jsbindings: finalizing JS object %p (Physics3DWorld)", obj);
 }
-
 void js_register_cocos2dx_physics3d_Physics3DWorld(JSContext *cx, JS::HandleObject global) {
     jsb_cocos2d_Physics3DWorld_class = (JSClass *)calloc(1, sizeof(JSClass));
     jsb_cocos2d_Physics3DWorld_class->name = "Physics3DWorld";
@@ -2809,11 +2785,11 @@ void js_register_cocos2dx_physics3d_Physics3DWorld(JSContext *cx, JS::HandleObje
         JS_FN("stepSimulate", js_cocos2dx_physics3d_Physics3DWorld_stepSimulate, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("needCollisionChecking", js_cocos2dx_physics3d_Physics3DWorld_needCollisionChecking, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("collisionChecking", js_cocos2dx_physics3d_Physics3DWorld_collisionChecking, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
+        JS_FN("setGhostPairCallback", js_cocos2dx_physics3d_Physics3DWorld_setGhostPairCallback, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("init", js_cocos2dx_physics3d_Physics3DWorld_init, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("removeAllPhysics3DObjects", js_cocos2dx_physics3d_Physics3DWorld_removeAllPhysics3DObjects, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("isDebugDrawEnabled", js_cocos2dx_physics3d_Physics3DWorld_isDebugDrawEnabled, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("removeAllPhysics3DConstraints", js_cocos2dx_physics3d_Physics3DWorld_removeAllPhysics3DConstraints, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
-        JS_FN("rayCast", js_cocos2dx_physics3d_Physics3DWorld_rayCast, 3, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getGravity", js_cocos2dx_physics3d_Physics3DWorld_getGravity, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("removePhysics3DConstraint", js_cocos2dx_physics3d_Physics3DWorld_removePhysics3DConstraint, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("addPhysics3DObject", js_cocos2dx_physics3d_Physics3DWorld_addPhysics3DObject, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
@@ -3109,11 +3085,9 @@ bool js_cocos2dx_physics3d_Physics3DConstraint_getbtContraint(JSContext *cx, uin
     return false;
 }
 
-
 void js_cocos2d_Physics3DConstraint_finalize(JSFreeOp *fop, JSObject *obj) {
     CCLOGINFO("jsbindings: finalizing JS object %p (Physics3DConstraint)", obj);
 }
-
 void js_register_cocos2dx_physics3d_Physics3DConstraint(JSContext *cx, JS::HandleObject global) {
     jsb_cocos2d_Physics3DConstraint_class = (JSClass *)calloc(1, sizeof(JSClass));
     jsb_cocos2d_Physics3DConstraint_class->name = "Physics3DConstraint";
@@ -3215,6 +3189,82 @@ bool js_cocos2dx_physics3d_Physics3DPointToPointConstraint_getPivotPointInB(JSCo
     }
 
     JS_ReportError(cx, "js_cocos2dx_physics3d_Physics3DPointToPointConstraint_getPivotPointInB : wrong number of arguments: %d, was expecting %d", argc, 0);
+    return false;
+}
+bool js_cocos2dx_physics3d_Physics3DPointToPointConstraint_init(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    bool ok = true;
+
+    JS::RootedObject obj(cx);
+    cocos2d::Physics3DPointToPointConstraint* cobj = NULL;
+    obj = args.thisv().toObjectOrNull();
+    js_proxy_t *proxy = jsb_get_js_proxy(obj);
+    cobj = (cocos2d::Physics3DPointToPointConstraint *)(proxy ? proxy->ptr : NULL);
+    JSB_PRECONDITION2( cobj, cx, false, "js_cocos2dx_physics3d_Physics3DPointToPointConstraint_init : Invalid Native Object");
+    do {
+        if (argc == 4) {
+            cocos2d::Physics3DRigidBody* arg0;
+            do {
+                if (args.get(0).isNull()) { arg0 = nullptr; break; }
+                if (!args.get(0).isObject()) { ok = false; break; }
+                js_proxy_t *jsProxy;
+                JSObject *tmpObj = args.get(0).toObjectOrNull();
+                jsProxy = jsb_get_js_proxy(tmpObj);
+                arg0 = (cocos2d::Physics3DRigidBody*)(jsProxy ? jsProxy->ptr : NULL);
+                JSB_PRECONDITION2( arg0, cx, false, "Invalid Native Object");
+            } while (0);
+            if (!ok) { ok = true; break; }
+            cocos2d::Physics3DRigidBody* arg1;
+            do {
+                if (args.get(1).isNull()) { arg1 = nullptr; break; }
+                if (!args.get(1).isObject()) { ok = false; break; }
+                js_proxy_t *jsProxy;
+                JSObject *tmpObj = args.get(1).toObjectOrNull();
+                jsProxy = jsb_get_js_proxy(tmpObj);
+                arg1 = (cocos2d::Physics3DRigidBody*)(jsProxy ? jsProxy->ptr : NULL);
+                JSB_PRECONDITION2( arg1, cx, false, "Invalid Native Object");
+            } while (0);
+            if (!ok) { ok = true; break; }
+            cocos2d::Vec3 arg2;
+            ok &= jsval_to_vector3(cx, args.get(2), &arg2);
+            if (!ok) { ok = true; break; }
+            cocos2d::Vec3 arg3;
+            ok &= jsval_to_vector3(cx, args.get(3), &arg3);
+            if (!ok) { ok = true; break; }
+            bool ret = cobj->init(arg0, arg1, arg2, arg3);
+            jsval jsret = JSVAL_NULL;
+            jsret = BOOLEAN_TO_JSVAL(ret);
+            args.rval().set(jsret);
+            return true;
+        }
+    } while(0);
+
+    do {
+        if (argc == 2) {
+            cocos2d::Physics3DRigidBody* arg0;
+            do {
+                if (args.get(0).isNull()) { arg0 = nullptr; break; }
+                if (!args.get(0).isObject()) { ok = false; break; }
+                js_proxy_t *jsProxy;
+                JSObject *tmpObj = args.get(0).toObjectOrNull();
+                jsProxy = jsb_get_js_proxy(tmpObj);
+                arg0 = (cocos2d::Physics3DRigidBody*)(jsProxy ? jsProxy->ptr : NULL);
+                JSB_PRECONDITION2( arg0, cx, false, "Invalid Native Object");
+            } while (0);
+            if (!ok) { ok = true; break; }
+            cocos2d::Vec3 arg1;
+            ok &= jsval_to_vector3(cx, args.get(1), &arg1);
+            if (!ok) { ok = true; break; }
+            bool ret = cobj->init(arg0, arg1);
+            jsval jsret = JSVAL_NULL;
+            jsret = BOOLEAN_TO_JSVAL(ret);
+            args.rval().set(jsret);
+            return true;
+        }
+    } while(0);
+
+    JS_ReportError(cx, "js_cocos2dx_physics3d_Physics3DPointToPointConstraint_init : wrong number of arguments");
     return false;
 }
 bool js_cocos2dx_physics3d_Physics3DPointToPointConstraint_setPivotPointInA(JSContext *cx, uint32_t argc, jsval *vp)
@@ -3369,13 +3419,11 @@ bool js_cocos2dx_physics3d_Physics3DPointToPointConstraint_constructor(JSContext
     return true;
 }
 
-
 extern JSObject *jsb_cocos2d_Physics3DConstraint_prototype;
 
 void js_cocos2d_Physics3DPointToPointConstraint_finalize(JSFreeOp *fop, JSObject *obj) {
     CCLOGINFO("jsbindings: finalizing JS object %p (Physics3DPointToPointConstraint)", obj);
 }
-
 void js_register_cocos2dx_physics3d_Physics3DPointToPointConstraint(JSContext *cx, JS::HandleObject global) {
     jsb_cocos2d_Physics3DPointToPointConstraint_class = (JSClass *)calloc(1, sizeof(JSClass));
     jsb_cocos2d_Physics3DPointToPointConstraint_class->name = "Physics3DPointToPointConstraint";
@@ -3397,6 +3445,7 @@ void js_register_cocos2dx_physics3d_Physics3DPointToPointConstraint(JSContext *c
     static JSFunctionSpec funcs[] = {
         JS_FN("getPivotPointInA", js_cocos2dx_physics3d_Physics3DPointToPointConstraint_getPivotPointInA, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("getPivotPointInB", js_cocos2dx_physics3d_Physics3DPointToPointConstraint_getPivotPointInB, 0, JSPROP_PERMANENT | JSPROP_ENUMERATE),
+        JS_FN("init", js_cocos2dx_physics3d_Physics3DPointToPointConstraint_init, 2, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("setPivotPointInA", js_cocos2dx_physics3d_Physics3DPointToPointConstraint_setPivotPointInA, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FN("setPivotPointInB", js_cocos2dx_physics3d_Physics3DPointToPointConstraint_setPivotPointInB, 1, JSPROP_PERMANENT | JSPROP_ENUMERATE),
         JS_FS_END
@@ -4294,13 +4343,11 @@ bool js_cocos2dx_physics3d_Physics3DHingeConstraint_constructor(JSContext *cx, u
     return true;
 }
 
-
 extern JSObject *jsb_cocos2d_Physics3DConstraint_prototype;
 
 void js_cocos2d_Physics3DHingeConstraint_finalize(JSFreeOp *fop, JSObject *obj) {
     CCLOGINFO("jsbindings: finalizing JS object %p (Physics3DHingeConstraint)", obj);
 }
-
 void js_register_cocos2dx_physics3d_Physics3DHingeConstraint(JSContext *cx, JS::HandleObject global) {
     jsb_cocos2d_Physics3DHingeConstraint_class = (JSClass *)calloc(1, sizeof(JSClass));
     jsb_cocos2d_Physics3DHingeConstraint_class->name = "Physics3DHingeConstraint";
@@ -5672,13 +5719,11 @@ bool js_cocos2dx_physics3d_Physics3DSliderConstraint_constructor(JSContext *cx, 
     return true;
 }
 
-
 extern JSObject *jsb_cocos2d_Physics3DConstraint_prototype;
 
 void js_cocos2d_Physics3DSliderConstraint_finalize(JSFreeOp *fop, JSObject *obj) {
     CCLOGINFO("jsbindings: finalizing JS object %p (Physics3DSliderConstraint)", obj);
 }
-
 void js_register_cocos2dx_physics3d_Physics3DSliderConstraint(JSContext *cx, JS::HandleObject global) {
     jsb_cocos2d_Physics3DSliderConstraint_class = (JSClass *)calloc(1, sizeof(JSClass));
     jsb_cocos2d_Physics3DSliderConstraint_class->name = "Physics3DSliderConstraint";
@@ -6293,13 +6338,11 @@ bool js_cocos2dx_physics3d_Physics3DConeTwistConstraint_constructor(JSContext *c
     return true;
 }
 
-
 extern JSObject *jsb_cocos2d_Physics3DConstraint_prototype;
 
 void js_cocos2d_Physics3DConeTwistConstraint_finalize(JSFreeOp *fop, JSObject *obj) {
     CCLOGINFO("jsbindings: finalizing JS object %p (Physics3DConeTwistConstraint)", obj);
 }
-
 void js_register_cocos2dx_physics3d_Physics3DConeTwistConstraint(JSContext *cx, JS::HandleObject global) {
     jsb_cocos2d_Physics3DConeTwistConstraint_class = (JSClass *)calloc(1, sizeof(JSClass));
     jsb_cocos2d_Physics3DConeTwistConstraint_class->name = "Physics3DConeTwistConstraint";
@@ -6705,13 +6748,11 @@ bool js_cocos2dx_physics3d_Physics3D6DofConstraint_constructor(JSContext *cx, ui
     return true;
 }
 
-
 extern JSObject *jsb_cocos2d_Physics3DConstraint_prototype;
 
 void js_cocos2d_Physics3D6DofConstraint_finalize(JSFreeOp *fop, JSObject *obj) {
     CCLOGINFO("jsbindings: finalizing JS object %p (Physics3D6DofConstraint)", obj);
 }
-
 void js_register_cocos2dx_physics3d_Physics3D6DofConstraint(JSContext *cx, JS::HandleObject global) {
     jsb_cocos2d_Physics3D6DofConstraint_class = (JSClass *)calloc(1, sizeof(JSClass));
     jsb_cocos2d_Physics3D6DofConstraint_class->name = "Physics3D6DofConstraint";
@@ -6781,7 +6822,7 @@ void js_register_cocos2dx_physics3d_Physics3D6DofConstraint(JSContext *cx, JS::H
 void register_all_cocos2dx_physics3d(JSContext* cx, JS::HandleObject obj) {
     // Get the ns
     JS::RootedObject ns(cx);
-    get_or_create_js_obj(cx, obj, "cc", &ns);
+    get_or_create_js_obj(cx, obj, "jsb", &ns);
 
     js_register_cocos2dx_physics3d_Physics3DConstraint(cx, ns);
     js_register_cocos2dx_physics3d_Physics3D6DofConstraint(cx, ns);

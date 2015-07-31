@@ -67,14 +67,6 @@ THE SOFTWARE.
 #include "CCScriptSupport.h"
 #endif
 
-#if CC_USE_PHYSICS
-#include "physics/CCPhysicsWorld.h"
-#endif
-
-#if CC_USE_3D_PHYSICS && CC_ENABLE_BULLET_INTEGRATION
-#include "physics3d/CCPhysics3DWorld.h"
-#endif
-
 /**
  Position of the FPS
  
@@ -292,19 +284,8 @@ void Director::drawScene()
     
     if (_runningScene)
     {
-#if CC_USE_PHYSICS
-        auto physicsWorld = _runningScene->getPhysicsWorld();
-        if (physicsWorld && physicsWorld->isAutoStep())
-        {
-            physicsWorld->update(_deltaTime, false);
-        }
-#endif
-#if CC_USE_3D_PHYSICS && CC_ENABLE_BULLET_INTEGRATION
-        auto physics3DWorld = _runningScene->getPhysics3DWorld();
-        if (physics3DWorld)
-        {
-            physics3DWorld->stepSimulate(_deltaTime);
-        }
+#if (CC_USE_PHYSICS || (CC_USE_3D_PHYSICS && CC_ENABLE_BULLET_INTEGRATION) || CC_USE_NAVMESH)
+        _runningScene->stepPhysicsAndNavigation(_deltaTime);
 #endif
         //clear draw stats
         _renderer->clearDrawStats();
@@ -429,11 +410,7 @@ TextureCache* Director::getTextureCache() const
 
 void Director::initTextureCache()
 {
-#ifdef EMSCRIPTEN
-    _textureCache = new (std::nothrow) TextureCacheEmscripten();
-#else
     _textureCache = new (std::nothrow) TextureCache();
-#endif // EMSCRIPTEN
 }
 
 void Director::destroyTextureCache()
@@ -710,6 +687,9 @@ void Director::setDepthTest(bool on)
 void Director::setClearColor(const Color4F& clearColor)
 {
     _renderer->setClearColor(clearColor);
+    auto defaultFBO = experimental::FrameBuffer::getOrCreateDefaultFBO(_openGLView);
+    
+    if(defaultFBO) defaultFBO->setClearColor(clearColor);
 }
 
 static void GLToClipTransform(Mat4 *transformOut)
@@ -961,6 +941,7 @@ void Director::reset()
     
     stopAnimation();
     
+    CC_SAFE_RELEASE_NULL(_notificationNode);
     CC_SAFE_RELEASE_NULL(_FPSLabel);
     CC_SAFE_RELEASE_NULL(_drawnBatchesLabel);
     CC_SAFE_RELEASE_NULL(_drawnVerticesLabel);
@@ -1025,6 +1006,9 @@ void Director::restartDirector()
 {
     reset();
     
+    // RenderState need to be reinitialized
+    RenderState::initialize();
+
     // Texture cache need to be reinitialized
     initTextureCache();
     
@@ -1353,7 +1337,7 @@ void DisplayLinkDirector::stopAnimation()
     _invalid = true;
 }
 
-void DisplayLinkDirector::setAnimationInterval(double interval)
+void DisplayLinkDirector::setAnimationInterval(float interval)
 {
     _animationInterval = interval;
     if (! _invalid)

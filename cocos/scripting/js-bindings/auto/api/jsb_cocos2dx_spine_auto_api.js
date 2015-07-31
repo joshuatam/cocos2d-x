@@ -458,7 +458,7 @@ float
  * @method SkeletonAnimation
  * @constructor
 * @param {spSkeletonData|String|String} spskeletondata
-* @param {spAtlas|String} spatlas
+* @param {bool|spAtlas|String} bool
 * @param {float|float} float
 */
 SkeletonAnimation : function(

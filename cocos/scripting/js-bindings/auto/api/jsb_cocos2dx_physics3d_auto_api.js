@@ -1,12 +1,12 @@
 /**
  * @module cocos2dx_physics3d
  */
-var cc = cc || {};
+var jsb = jsb || {};
 
 /**
  * @class Physics3DShape
  */
-cc.Physics3DShape = {
+jsb.Physics3DShape = {
 
 /**
  * @method getbtShape
@@ -99,7 +99,7 @@ float
 /**
  * @class Physics3DObject
  */
-cc.Physics3DObject = {
+jsb.Physics3DObject = {
 
 /**
  * @method setUserData
@@ -206,7 +206,7 @@ needCollisionCallback : function (
 /**
  * @class Physics3DRigidBody
  */
-cc.Physics3DRigidBody = {
+jsb.Physics3DRigidBody = {
 
 /**
  * @method setGravity
@@ -724,7 +724,7 @@ Physics3DRigidBody : function (
 /**
  * @class Physics3DComponent
  */
-cc.Physics3DComponent = {
+jsb.Physics3DComponent = {
 
 /**
  * @method syncNodeToPhysics
@@ -834,7 +834,7 @@ Physics3DComponent : function (
 /**
  * @class PhysicsSprite3D
  */
-cc.PhysicsSprite3D = {
+jsb.PhysicsSprite3D = {
 
 /**
  * @method syncNodeToPhysics
@@ -886,7 +886,7 @@ PhysicsSprite3D : function (
 /**
  * @class Physics3DWorld
  */
-cc.Physics3DWorld = {
+jsb.Physics3DWorld = {
 
 /**
  * @method setGravity
@@ -927,6 +927,14 @@ collisionChecking : function (
 },
 
 /**
+ * @method setGhostPairCallback
+ */
+setGhostPairCallback : function (
+)
+{
+},
+
+/**
  * @method init
  * @param {cc.Physics3DWorldDes} arg0
  * @return {bool}
@@ -962,22 +970,6 @@ isDebugDrawEnabled : function (
 removeAllPhysics3DConstraints : function (
 )
 {
-},
-
-/**
- * @method rayCast
- * @param {vec3_object} arg0
- * @param {vec3_object} arg1
- * @param {cc.Physics3DWorld::HitResult} arg2
- * @return {bool}
- */
-rayCast : function (
-vec3, 
-vec3, 
-hitresult 
-)
-{
-    return false;
 },
 
 /**
@@ -1108,7 +1100,7 @@ Physics3DWorld : function (
 /**
  * @class Physics3DConstraint
  */
-cc.Physics3DConstraint = {
+jsb.Physics3DConstraint = {
 
 /**
  * @method setEnabled
@@ -1235,7 +1227,7 @@ getbtContraint : function (
 /**
  * @class Physics3DPointToPointConstraint
  */
-cc.Physics3DPointToPointConstraint = {
+jsb.Physics3DPointToPointConstraint = {
 
 /**
  * @method getPivotPointInA
@@ -1255,6 +1247,24 @@ getPivotPointInB : function (
 )
 {
     return cc.Vec3;
+},
+
+/**
+ * @method init
+* @param {cc.Physics3DRigidBody|cc.Physics3DRigidBody} physics3drigidbody
+* @param {cc.Physics3DRigidBody|vec3_object} physics3drigidbody
+* @param {vec3_object} vec3
+* @param {vec3_object} vec3
+* @return {bool|bool}
+*/
+init : function(
+physics3drigidbody,
+physics3drigidbody,
+vec3,
+vec3 
+)
+{
+    return false;
 },
 
 /**
@@ -1309,7 +1319,7 @@ Physics3DPointToPointConstraint : function (
 /**
  * @class Physics3DHingeConstraint
  */
-cc.Physics3DHingeConstraint = {
+jsb.Physics3DHingeConstraint = {
 
 /**
  * @method getHingeAngle
@@ -1579,7 +1589,7 @@ Physics3DHingeConstraint : function (
 /**
  * @class Physics3DSliderConstraint
  */
-cc.Physics3DSliderConstraint = {
+jsb.Physics3DSliderConstraint = {
 
 /**
  * @method setPoweredAngMotor
@@ -2257,7 +2267,7 @@ Physics3DSliderConstraint : function (
 /**
  * @class Physics3DConeTwistConstraint
  */
-cc.Physics3DConeTwistConstraint = {
+jsb.Physics3DConeTwistConstraint = {
 
 /**
  * @method getBFrame
@@ -2477,7 +2487,7 @@ Physics3DConeTwistConstraint : function (
 /**
  * @class Physics3D6DofConstraint
  */
-cc.Physics3D6DofConstraint = {
+jsb.Physics3D6DofConstraint = {
 
 /**
  * @method setLinearLowerLimit

@@ -143,23 +143,14 @@ namespace {
     class SliderEx : public Slider
     {
     public:
-        enum class TouchEvent
-        {
-            DOWN,
-            MOVE,
-            UP,
-            CANCEL
-        };
-        typedef std::function<void(SliderEx*,float,TouchEvent)> ccSliderExCallback;
-        
         static SliderEx* create(){
             auto ret = new (std::nothrow) SliderEx();
             if (ret && ret->init())
             {
-                ret->_callback = nullptr;
                 ret->loadBarTexture("cocosui/sliderTrack.png");
                 ret->loadSlidBallTextures("cocosui/sliderThumb.png", "cocosui/sliderThumb.png", "");
                 ret->loadProgressBarTexture("cocosui/sliderProgress.png");
+                ret->setTouchEnabled(true);
                 
                 ret->autorelease();
                 
@@ -169,94 +160,20 @@ namespace {
             return ret;
         }
         
-        void setCallBack(const ccSliderExCallback& callback){
-            _callback = callback;
-        }
-        
         void setRatio(float ratio) {
-            if (ratio > 1.0f){
-                ratio = 1.0f;
-            }
-            else if (ratio < 0.0f){
-                ratio = 0.0f;
-            }
+            ratio = clampf(ratio, 0.0f, 1.0f);
             
             _ratio = ratio;
-            _percent = 100 * _ratio;
-            
-            float dis = _barLength * _ratio;
-            _slidBallRenderer->setPosition(Vec2(dis, _contentSize.height / 2.0f));
-            if (_scale9Enabled){
-                _progressBarRenderer->setPreferredSize(Size(dis,_progressBarTextureSize.height));
-            }
-            else
-            {
-                auto spriteRenderer = _progressBarRenderer->getSprite();
-                
-                if (nullptr != spriteRenderer) {
-                    Rect rect = spriteRenderer->getTextureRect();
-                    rect.size.width = _progressBarTextureSize.width * _ratio;
-                    spriteRenderer->setTextureRect(rect, spriteRenderer->isTextureRectRotated(), rect.size);
-                }
-            }
+            setPercent(100 * _ratio);
         }
         
-        virtual bool onTouchBegan(Touch *touch, Event *unusedEvent) override{
-            auto ret = Slider::onTouchBegan(touch, unusedEvent);
-            if(ret && _callback){
-                _touchEvent = TouchEvent::DOWN;
-                Vec2 nsp = convertToNodeSpace(_touchBeganPosition);
-                _ratio = nsp.x / _barLength;
-                if(_ratio < 0.0f)
-                    _ratio = 0.0f;
-                else if(_ratio > 1.0f)
-                    _ratio = 1.0f;
-                _callback(this,_ratio,_touchEvent);
-            }
-            return ret;
-        }
-        
-        virtual void onTouchMoved(Touch *touch, Event *unusedEvent) override{
-            _touchEvent = TouchEvent::MOVE;
-            Slider::onTouchMoved(touch, unusedEvent);
-            Vec2 nsp = convertToNodeSpace(_touchMovePosition);
-            _ratio = nsp.x / _barLength;
-            if(_ratio < 0.0f)
-                _ratio = 0.0f;
-            else if(_ratio > 1.0f)
-                _ratio = 1.0f;
-            if(_callback){
-                _callback(this,_ratio,_touchEvent);
-            }
-        }
-        
-        virtual void onTouchEnded(Touch *touch, Event *unusedEvent) override{
-            _touchEvent = TouchEvent::UP;
-            Slider::onTouchEnded(touch, unusedEvent);
-            Vec2 nsp = convertToNodeSpace(_touchEndPosition);
-            _ratio = nsp.x / _barLength;
-            if(_ratio < 0.0f)
-                _ratio = 0.0f;
-            else if(_ratio > 1.0f)
-                _ratio = 1.0f;
-            if(_callback){
-                _callback(this,_ratio,_touchEvent);
-            }
-        }
-        
-        virtual void onTouchCancelled(Touch *touch, Event *unusedEvent) override{
-            _touchEvent = TouchEvent::CANCEL;
-            Slider::onTouchCancelled(touch, unusedEvent);
-            
-            if(_callback){
-                _callback(this,_ratio,_touchEvent);
-            }
+        float getRatio () {
+            _ratio = 1.0f * _percent / _maxPercent;
+            return _ratio;
         }
         
     private:
-        TouchEvent _touchEvent;
         float _ratio;
-        ccSliderExCallback _callback;
     };
 }
 
@@ -303,7 +220,7 @@ bool AudioControlTest::init()
         }
     });
     _playItem = playItem;
-    playItem->setPosition(layerSize.width * 0.3f,layerSize.height * 0.7f);
+    playItem->setPosition(layerSize.width * 0.3f,layerSize.height * 0.8f);
     addChild(playItem);
     
     auto stopItem = TextButton::create("stop", [&](TextButton* button){
@@ -314,7 +231,7 @@ bool AudioControlTest::init()
             ((TextButton*)_playItem)->setEnabled(true);
         }
     });
-    stopItem->setPosition(layerSize.width * 0.7f,layerSize.height * 0.7f);
+    stopItem->setPosition(layerSize.width * 0.7f,layerSize.height * 0.8f);
     addChild(stopItem);
     
     auto pauseItem = TextButton::create("pause", [&](TextButton* button){
@@ -322,7 +239,7 @@ bool AudioControlTest::init()
             AudioEngine::pause(_audioID);
         }
     });
-    pauseItem->setPosition(layerSize.width * 0.3f,layerSize.height * 0.6f);
+    pauseItem->setPosition(layerSize.width * 0.3f,layerSize.height * 0.7f);
     addChild(pauseItem);
     
     auto resumeItem = TextButton::create("resume", [&](TextButton* button){
@@ -330,38 +247,45 @@ bool AudioControlTest::init()
             AudioEngine::resume(_audioID);
         }
     });
-    resumeItem->setPosition(layerSize.width * 0.7f,layerSize.height * 0.6f);
+    resumeItem->setPosition(layerSize.width * 0.7f,layerSize.height * 0.7f);
     addChild(resumeItem);
     
     auto loopItem = TextButton::create("enable-loop", [&](TextButton* button){
         _loopEnabled = !_loopEnabled;
-        
-        if (_audioID != AudioEngine::INVALID_AUDIO_ID ) {
+
+        if (_audioID != AudioEngine::INVALID_AUDIO_ID) {
             AudioEngine::setLoop(_audioID, _loopEnabled);
         }
-        if(_loopEnabled){
+        if (_loopEnabled){
             button->setString("disable-loop");
         }
         else {
             button->setString("enable-loop");
         }
     });
-    loopItem->setPosition(layerSize.width * 0.3f,layerSize.height * 0.5f);
+    loopItem->setPosition(layerSize.width * 0.5f, layerSize.height * 0.5f);
     addChild(loopItem);
     
+    auto preloadItem = TextButton::create("preload", [&](TextButton* button){
+        AudioEngine::preload("background.mp3");
+    });
+    preloadItem->setPosition(layerSize.width * 0.3f, layerSize.height * 0.6f);
+    addChild(preloadItem);
+
     auto uncacheItem = TextButton::create("uncache", [&](TextButton* button){
         AudioEngine::uncache("background.mp3");
         
         _audioID = AudioEngine::INVALID_AUDIO_ID;
         ((TextButton*)_playItem)->setEnabled(true);
     });
-    uncacheItem->setPosition(layerSize.width * 0.7f,layerSize.height * 0.5f);
+    uncacheItem->setPosition(layerSize.width * 0.7f,layerSize.height * 0.6f);
     addChild(uncacheItem);
     
     auto volumeSlider = SliderEx::create();
     volumeSlider->setPercent(100);
-    volumeSlider->setCallBack([&](SliderEx* sender,float ratio,SliderEx::TouchEvent event){
-        _volume = ratio;
+    volumeSlider->addEventListener([&](Ref* sender, Slider::EventType event){
+        SliderEx *slider = dynamic_cast<SliderEx *>(sender);
+        _volume = slider->getRatio();
         if (_audioID != AudioEngine::INVALID_AUDIO_ID ) {
             AudioEngine::setVolume(_audioID, _volume);
         }
@@ -370,17 +294,20 @@ bool AudioControlTest::init()
     addChild(volumeSlider);
     
     auto timeSlider = SliderEx::create();
-    timeSlider->setCallBack([&](SliderEx* sender,float ratio,SliderEx::TouchEvent event){
+    timeSlider->addEventListener([&](Ref* sender, Slider::EventType event){
+        SliderEx *slider = dynamic_cast<SliderEx *>(sender);
         switch(event){
-            case SliderEx::TouchEvent::MOVE:
-            case SliderEx::TouchEvent::DOWN:
+            case Slider::EventType::ON_PERCENTAGE_CHANGED:
+            case Slider::EventType::ON_SLIDEBALL_DOWN:
                 _updateTimeSlider = false;
                 break;
-            case SliderEx::TouchEvent::UP:
+            case Slider::EventType::ON_SLIDEBALL_UP:
                 if (_audioID != AudioEngine::INVALID_AUDIO_ID && _duration != AudioEngine::TIME_UNKNOWN) {
-                    AudioEngine::setCurrentTime(_audioID,_duration * ratio);
+                    float ratio = (float)slider->getPercent() / 100;
+                    ratio = clampf(ratio, 0.0f, 1.0f);
+                    AudioEngine::setCurrentTime(_audioID, _duration * ratio);
                 }
-            case SliderEx::TouchEvent::CANCEL:
+            case Slider::EventType::ON_SLIDEBALL_CANCEL:
                 _updateTimeSlider = true;
                 break;
         }

@@ -152,8 +152,11 @@
       <AdditionalIncludeDirectories>..\Classes;$(EngineRoot)cocos\platform\win8.1-universal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <PreprocessorDefinitions>CC_ENABLE_CHIPMUNK_INTEGRATION=1;CC_ENABLE_BULLET_INTEGRATION=1;COCOS2D_DEBUG=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CC_ENABLE_CHIPMUNK_INTEGRATION=1;COCOS2D_DEBUG=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <Link>
+      <IgnoreSpecificDefaultLibraries>MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
@@ -164,7 +167,7 @@
       <SDLCheck>false</SDLCheck>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <PreprocessorDefinitions>CC_ENABLE_CHIPMUNK_INTEGRATION=1;CC_ENABLE_BULLET_INTEGRATION=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CC_ENABLE_CHIPMUNK_INTEGRATION=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <LinkTimeCodeGeneration />
@@ -178,8 +181,11 @@
       <AdditionalIncludeDirectories>..\Classes;$(EngineRoot)cocos\platform\win8.1-universal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <PreprocessorDefinitions>CC_ENABLE_CHIPMUNK_INTEGRATION=1;CC_ENABLE_BULLET_INTEGRATION=1;COCOS2D_DEBUG=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CC_ENABLE_CHIPMUNK_INTEGRATION=1;COCOS2D_DEBUG=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <Link>
+      <IgnoreSpecificDefaultLibraries>MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -189,7 +195,7 @@
       <AdditionalIncludeDirectories>..\Classes;$(EngineRoot)cocos\platform\win8.1-universal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <PreprocessorDefinitions>CC_ENABLE_CHIPMUNK_INTEGRATION=1;CC_ENABLE_BULLET_INTEGRATION=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CC_ENABLE_CHIPMUNK_INTEGRATION=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <LinkTimeCodeGeneration />
@@ -202,9 +208,12 @@
       <ForcedIncludeFiles>pch.h</ForcedIncludeFiles>
       <AdditionalIncludeDirectories>..\Classes;$(EngineRoot)cocos\platform\win8.1-universal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <PreprocessorDefinitions>CC_ENABLE_CHIPMUNK_INTEGRATION=1;CC_ENABLE_BULLET_INTEGRATION=1;COCOS2D_DEBUG=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <PreprocessorDefinitions>CC_ENABLE_CHIPMUNK_INTEGRATION=1;COCOS2D_DEBUG=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <Link>
+      <IgnoreSpecificDefaultLibraries>MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -214,7 +223,7 @@
       <AdditionalIncludeDirectories>..\Classes;$(EngineRoot)cocos\platform\win8.1-universal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <PreprocessorDefinitions>CC_ENABLE_CHIPMUNK_INTEGRATION=1;CC_ENABLE_BULLET_INTEGRATION=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CC_ENABLE_CHIPMUNK_INTEGRATION=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <LinkTimeCodeGeneration />
@@ -289,6 +298,9 @@
     <ClInclude Include="..\Classes\Box2DTestBed\Tests\VerticalStack.h" />
     <ClInclude Include="..\Classes\Box2DTestBed\Tests\Web.h" />
     <ClInclude Include="..\Classes\Box2DTest\Box2dTest.h" />
+    <ClInclude Include="..\Classes\BugsTest\Bug-12847.h" />
+    <ClInclude Include="..\Classes\BugsTest\Bug-CCDrawNode.h" />
+    <ClInclude Include="..\Classes\BugsTest\Bug-PageViewLayout.h" />
     <ClInclude Include="..\Classes\BugsTest\Bug-1159.h" />
     <ClInclude Include="..\Classes\BugsTest\Bug-1174.h" />
     <ClInclude Include="..\Classes\BugsTest\Bug-350.h" />
@@ -375,6 +387,7 @@
     <ClInclude Include="..\Classes\MenuTest\MenuTest.h" />
     <ClInclude Include="..\Classes\MotionStreakTest\MotionStreakTest.h" />
     <ClInclude Include="..\Classes\MutiTouchTest\MutiTouchTest.h" />
+    <ClInclude Include="..\Classes\NavMeshTest\NavMeshTest.h" />
     <ClInclude Include="..\Classes\NewAudioEngineTest\NewAudioEngineTest.h" />
     <ClInclude Include="..\Classes\NewEventDispatcherTest\NewEventDispatcherTest.h" />
     <ClInclude Include="..\Classes\NewRendererTest\NewRendererTest.h" />
@@ -486,6 +499,7 @@
     <ClInclude Include="..\Classes\UnitTest\UnitTest.h" />
     <ClInclude Include="..\Classes\UserDefaultTest\UserDefaultTest.h" />
     <ClInclude Include="..\Classes\VisibleRect.h" />
+    <ClInclude Include="..\Classes\VibrateTest\VibrateTest.h" />
     <ClInclude Include="..\Classes\ZwoptexTest\ZwoptexTest.h" />
     <ClInclude Include="App.xaml.h">
       <DependentUpon>App.xaml</DependentUpon>
@@ -536,6 +550,9 @@
     <ClCompile Include="..\Classes\Box2DTestBed\Test.cpp" />
     <ClCompile Include="..\Classes\Box2DTestBed\TestEntries.cpp" />
     <ClCompile Include="..\Classes\Box2DTest\Box2dTest.cpp" />
+    <ClCompile Include="..\Classes\BugsTest\Bug-12847.cpp" />
+    <ClCompile Include="..\Classes\BugsTest\Bug-CCDrawNode.cpp" />
+    <ClCompile Include="..\Classes\BugsTest\Bug-PageViewLayout.cpp" />
     <ClCompile Include="..\Classes\BugsTest\Bug-1159.cpp" />
     <ClCompile Include="..\Classes\BugsTest\Bug-1174.cpp" />
     <ClCompile Include="..\Classes\BugsTest\Bug-350.cpp" />
@@ -607,6 +624,7 @@
     <ClCompile Include="..\Classes\MenuTest\MenuTest.cpp" />
     <ClCompile Include="..\Classes\MotionStreakTest\MotionStreakTest.cpp" />
     <ClCompile Include="..\Classes\MutiTouchTest\MutiTouchTest.cpp" />
+    <ClCompile Include="..\Classes\NavMeshTest\NavMeshTest.cpp" />
     <ClCompile Include="..\Classes\NewAudioEngineTest\NewAudioEngineTest.cpp" />
     <ClCompile Include="..\Classes\NewEventDispatcherTest\NewEventDispatcherTest.cpp" />
     <ClCompile Include="..\Classes\NewRendererTest\NewRendererTest.cpp" />
@@ -677,6 +695,7 @@
     <ClCompile Include="..\Classes\UITest\CocoStudioGUITest\UIButtonTest\UIButtonTest_Editor.cpp" />
     <ClCompile Include="..\Classes\UITest\CocoStudioGUITest\UICheckBoxTest\UICheckBoxTest.cpp" />
     <ClCompile Include="..\Classes\UITest\CocoStudioGUITest\UICheckBoxTest\UICheckBoxTest_Editor.cpp" />
+    <ClCompile Include="..\Classes\UITest\CocoStudioGUITest\UIRadioButtonTest\UIRadioButtonTest.cpp" />
     <ClCompile Include="..\Classes\UITest\CocoStudioGUITest\UIEditBoxTest.cpp" />
     <ClCompile Include="..\Classes\UITest\CocoStudioGUITest\UIFocusTest\UIFocusTest.cpp" />
     <ClCompile Include="..\Classes\UITest\CocoStudioGUITest\UIImageViewTest\UIImageViewTest.cpp" />
@@ -714,6 +733,7 @@
     <ClCompile Include="..\Classes\UnitTest\UnitTest.cpp" />
     <ClCompile Include="..\Classes\UserDefaultTest\UserDefaultTest.cpp" />
     <ClCompile Include="..\Classes\VisibleRect.cpp" />
+    <ClCompile Include="..\Classes\VibrateTest\VibrateTest.cpp" />
     <ClCompile Include="..\Classes\ZwoptexTest\ZwoptexTest.cpp" />
     <ClCompile Include="App.xaml.cpp">
       <DependentUpon>App.xaml</DependentUpon>

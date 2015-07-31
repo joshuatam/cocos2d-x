@@ -219,6 +219,16 @@ void setKeepScreenOnJni(bool value) {
     }
 }
 
+void vibrateJni(float duration) {
+    JniMethodInfo t;
+    
+    if (JniHelper::getStaticMethodInfo(t, CLASS_NAME, "vibrate", "(F)V")) {
+        t.env->CallStaticVoidMethod(t.classID, t.methodID, duration);
+        
+        t.env->DeleteLocalRef(t.classID);
+    }
+}
+
 extern bool openURLJNI(const char* url) {
     JniMethodInfo t;
     
@@ -388,5 +398,40 @@ void setStringForKeyJNI(const char* key, const char* value)
         t.env->DeleteLocalRef(t.classID);
         t.env->DeleteLocalRef(stringArg1);
         t.env->DeleteLocalRef(stringArg2);
+    }
+}
+
+void deleteValueForKeyJNI(const char* key)
+{
+    JniMethodInfo t;
+    
+    if (JniHelper::getStaticMethodInfo(t, CLASS_NAME, "deleteValueForKey", "(Ljava/lang/String;)V")) {
+        jstring stringArg1 = t.env->NewStringUTF(key);
+        t.env->CallStaticVoidMethod(t.classID, t.methodID, stringArg1);
+        
+        t.env->DeleteLocalRef(t.classID);
+        t.env->DeleteLocalRef(stringArg1);
+    }
+}
+
+void conversionEncodingJNI(const char* src, int byteSize, const char* fromCharset, char* dst, const char* newCharset)
+{
+    JniMethodInfo methodInfo;
+
+    if (JniHelper::getStaticMethodInfo(methodInfo, CLASS_NAME, "conversionEncoding", "([BLjava/lang/String;Ljava/lang/String;)[B")) {
+        jbyteArray strArray = methodInfo.env->NewByteArray(byteSize);
+        methodInfo.env->SetByteArrayRegion(strArray, 0, byteSize, reinterpret_cast<const jbyte*>(src));
+
+        jstring stringArg1 = methodInfo.env->NewStringUTF(fromCharset);
+        jstring stringArg2 = methodInfo.env->NewStringUTF(newCharset);
+
+        jbyteArray newArray = (jbyteArray)methodInfo.env->CallStaticObjectMethod(methodInfo.classID, methodInfo.methodID, strArray, stringArg1, stringArg2);
+        jsize theArrayLen = methodInfo.env->GetArrayLength(newArray);
+        methodInfo.env->GetByteArrayRegion(newArray, 0, theArrayLen, (jbyte*)dst);
+
+        methodInfo.env->DeleteLocalRef(strArray);
+        methodInfo.env->DeleteLocalRef(stringArg1);
+        methodInfo.env->DeleteLocalRef(stringArg2);
+        methodInfo.env->DeleteLocalRef(methodInfo.classID);
     }
 }
