@@ -1,6 +1,7 @@
 #include "LabelTestNew.h"
 #include "../testResource.h"
 #include "renderer/CCRenderer.h"
+#include "2d/CCFontAtlasCache.h"
 
 USING_NS_CC;
 using namespace ui;
@@ -85,6 +86,8 @@ NewLabelTests::NewLabelTests()
     ADD_TEST_CASE(LabelIssue11585Test);
     ADD_TEST_CASE(LabelFullTypeFontTest);
     ADD_TEST_CASE(LabelIssue10688Test);
+    ADD_TEST_CASE(LabelIssue13202Test);
+    ADD_TEST_CASE(LabelIssue9500Test);
 };
 
 LabelTTFAlignmentNew::LabelTTFAlignmentNew()
@@ -443,7 +446,7 @@ LabelFNTandTTFEmpty::LabelFNTandTTFEmpty()
     auto label2 = Label::createWithTTF(ttfConfig,"", TextHAlignment::CENTER,s.width);
     addChild(label2, 0, kTagBitmapAtlas2);
     label2->setPosition(Vec2(s.width/2, s.height / 2));
-
+    
     auto label3 = Label::createWithCharMap("fonts/tuffy_bold_italic-charmap.plist");
     addChild(label3, 0, kTagBitmapAtlas3);
     label3->setPosition(Vec2(s.width/2, 100));
@@ -811,7 +814,7 @@ std::string LabelFNTUNICODELanguages::title() const
 
 std::string LabelFNTUNICODELanguages::subtitle() const
 {
-    return "You should see 4 differnt labels:\nIn Spanish, Chinese, Russian and Korean";
+    return "You should see 4 differnt labels:\nIn Spanish, Chinese, Russian and Japanese";
 }
 
 LabelFNTBounds::LabelFNTBounds()
@@ -2057,4 +2060,48 @@ std::string LabelIssue10688Test::title() const
 std::string LabelIssue10688Test::subtitle() const
 {
     return "The MenuItemLabel should be displayed in the middle of the screen.";
+}
+
+LabelIssue13202Test::LabelIssue13202Test()
+{
+    auto center = VisibleRect::center();
+
+    auto label = Label::createWithTTF("asdfghjklzxcvbnmqwertyuiop", "fonts/arial.ttf", 150);
+    label->setPosition(center);
+    addChild(label);
+
+    label->getContentSize();
+    label->setString("A");
+    this->scheduleOnce([](float dt){
+        FontAtlasCache::purgeCachedData();
+    }, 0.15f, "FontAtlasCache::purgeCachedData");
+}
+
+std::string LabelIssue13202Test::title() const
+{
+    return "Test for Issue #13202";
+}
+
+std::string LabelIssue13202Test::subtitle() const
+{
+    return "FontAtlasCache::purgeCachedData should not cause crash.";
+}
+
+LabelIssue9500Test::LabelIssue9500Test()
+{
+    auto center = VisibleRect::center();
+
+    auto label = Label::createWithTTF("Spaces should not be lost", "fonts/Fingerpop.ttf", 20);
+    label->setPosition(center);
+    addChild(label);
+}
+
+std::string LabelIssue9500Test::title() const
+{
+    return "Test for Issue #9500";
+}
+
+std::string LabelIssue9500Test::subtitle() const
+{
+    return "Spaces should not be lost if label created with Fingerpop.ttf";
 }
