@@ -10,7 +10,7 @@ if(NOT FONTCONFIG_FOUND)
 endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Fontconfig
+find_package_handle_standard_args(fontconfig
   REQUIRED_VARS FONTCONFIG_FOUND
   VERSION_VAR FONTCONFIG_VERSION
   )
