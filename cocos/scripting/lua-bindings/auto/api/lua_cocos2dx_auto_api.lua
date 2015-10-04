@@ -37,6 +37,11 @@
 
 
 --------------------------------------------------------
+-- the cc Component
+-- @field [parent=#cc] Component#Component Component preloaded module
+
+
+--------------------------------------------------------
 -- the cc Node
 -- @field [parent=#cc] Node#Node Node preloaded module
 
@@ -852,6 +857,11 @@
 
 
 --------------------------------------------------------
+-- the cc ParticleData
+-- @field [parent=#cc] ParticleData#ParticleData ParticleData preloaded module
+
+
+--------------------------------------------------------
 -- the cc ParticleSystem
 -- @field [parent=#cc] ParticleSystem#ParticleSystem ParticleSystem preloaded module
 
@@ -1142,6 +1152,26 @@
 
 
 --------------------------------------------------------
+-- the cc CameraBackgroundBrush
+-- @field [parent=#cc] CameraBackgroundBrush#CameraBackgroundBrush CameraBackgroundBrush preloaded module
+
+
+--------------------------------------------------------
+-- the cc CameraBackgroundDepthBrush
+-- @field [parent=#cc] CameraBackgroundDepthBrush#CameraBackgroundDepthBrush CameraBackgroundDepthBrush preloaded module
+
+
+--------------------------------------------------------
+-- the cc CameraBackgroundColorBrush
+-- @field [parent=#cc] CameraBackgroundColorBrush#CameraBackgroundColorBrush CameraBackgroundColorBrush preloaded module
+
+
+--------------------------------------------------------
+-- the cc CameraBackgroundSkyBoxBrush
+-- @field [parent=#cc] CameraBackgroundSkyBoxBrush#CameraBackgroundSkyBoxBrush CameraBackgroundSkyBoxBrush preloaded module
+
+
+--------------------------------------------------------
 -- the cc GridBase
 -- @field [parent=#cc] GridBase#GridBase GridBase preloaded module
 
@@ -1287,8 +1317,18 @@
 
 
 --------------------------------------------------------
--- the cc Component
--- @field [parent=#cc] Component#Component Component preloaded module
+-- the cc MotionStreak3D
+-- @field [parent=#cc] MotionStreak3D#MotionStreak3D MotionStreak3D preloaded module
+
+
+--------------------------------------------------------
+-- the cc Sprite3DMaterial
+-- @field [parent=#cc] Sprite3DMaterial#Sprite3DMaterial Sprite3DMaterial preloaded module
+
+
+--------------------------------------------------------
+-- the cc ComponentLua
+-- @field [parent=#cc] ComponentLua#ComponentLua ComponentLua preloaded module
 
 
 return nil

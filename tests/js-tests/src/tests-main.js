@@ -291,15 +291,6 @@ var testNames = [
             return new ChipmunkTestScene();
         }
     },
-    //"BugsTest",
-    {
-        title:"Click and Move Test",
-        platforms: PLATFORM_ALL,
-        linksrc:"src/ClickAndMoveTest/ClickAndMoveTest.js",
-        testScene:function () {
-            return new ClickAndMoveTestScene();
-        }
-    },
     {
         title:"ClippingNode Test",
         platforms: PLATFORM_ALL,
@@ -324,6 +315,14 @@ var testNames = [
         linksrc:"",
         testScene:function () {
             return new CocoStudioTestScene();
+        }
+    },
+    {
+        title:"Component Test",
+        platforms: PLATFORM_JSB,
+        linksrc:"src/ComponentTest/ComponentTest.js",
+        testScene:function () {
+            return new ComponentTestScene();
         }
     },
     {
@@ -542,15 +541,6 @@ var testNames = [
         linksrc:"src/PathTest/PathTest.js",
         testScene:function () {
             return new PathTestScene();
-        }
-    },
-    {
-        title:"Performance Test",
-        platforms: PLATFORM_ALL,
-        linksrc:"",
-        resource:g_performace,
-        testScene:function () {
-            return new PerformanceTestScene();
         }
     },
     {

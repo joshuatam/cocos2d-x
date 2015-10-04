@@ -27,16 +27,13 @@ THE SOFTWARE.
 #define __CCWINRT_UTILS_H__
 
 #include "platform/CCPlatformMacros.h"
-
-#include <wrl/client.h>
-#include <ppl.h>
 #include <ppltasks.h>
 
 #include <string>
 
 NS_CC_BEGIN
 
-
+bool isWindowsPhone();
 
 CC_DEPRECATED_ATTRIBUTE std::wstring CC_DLL CCUtf8ToUnicode(const char * pszUtf8Str, unsigned len = -1);
 CC_DEPRECATED_ATTRIBUTE std::string CC_DLL CCUnicodeToUtf8(const wchar_t* pwszStr);

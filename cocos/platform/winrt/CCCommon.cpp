@@ -24,6 +24,7 @@ THE SOFTWARE.
 ****************************************************************************/
 #include "platform/CCCommon.h"
 #include "platform/CCStdC.h"
+#include "platform/winrt/CCGLViewImpl-winrt.h"
 #include "CCWinRTUtils.h"
 
 #if defined(VLD_DEBUG_MEMORY)
@@ -35,12 +36,10 @@ NS_CC_BEGIN
 
 void MessageBox(const char * pszMsg, const char * pszTitle)
 {
-#ifndef WP8_SHADER_COMPILER
     // Create the message dialog and set its content
     Platform::String^ message = PlatformStringFromString(pszMsg);
     Platform::String^ title = PlatformStringFromString(pszTitle);
     GLViewImpl::sharedOpenGLView()->ShowMessageBox(title, message);
-#endif
 }
 
 

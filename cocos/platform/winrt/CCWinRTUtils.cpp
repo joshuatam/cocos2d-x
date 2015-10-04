@@ -23,15 +23,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 #include "CCWinRTUtils.h"
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN 1
-#endif
-#include <Windows.h>
 #include <wrl/client.h>
 #include <wrl/wrappers/corewrappers.h>
 #include <ppl.h>
 #include <ppltasks.h>
 #include <sstream>
+#include "base/ccMacros.h"
+#include "platform/CCPlatformMacros.h"
+#include "platform/CCFileUtils.h"
+#include "base/CCUserDefault.h"
 
 using namespace Windows::UI::Xaml;
 using namespace Windows::UI::Xaml::Controls;
@@ -47,6 +47,20 @@ using namespace Windows::Storage::Pickers;
 using namespace Windows::Storage::Streams;
 using namespace Windows::Networking::Connectivity;
 
+bool isWindowsPhone()
+{
+#if _MSC_VER >= 1900
+    if (Windows::Foundation::Metadata::ApiInformation::IsTypePresent("Windows.Phone.UI.Input.HardwareButtons"))
+    {
+        return true;
+    }
+#elif (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
+    return true;
+#else
+    return false;
+#endif
+    return false;
+}
 
 CC_DEPRECATED_ATTRIBUTE std::wstring CC_DLL CCUtf8ToUnicode(const char * pszUtf8Str, unsigned len /*= -1*/)
 {
@@ -158,7 +172,6 @@ float getScaledDPIValue(float v) {
 
 void CC_DLL CCLogIPAddresses()
 {
-#ifndef WP8_SHADER_COMPILER
     auto hostnames = NetworkInformation::GetHostNames();
     int length = hostnames->Size;
 
@@ -171,7 +184,6 @@ void CC_DLL CCLogIPAddresses()
             log("IP Address: %s:", s.c_str());
         }
     }
-#endif
 }
 
 std::string CC_DLL getDeviceIPAddresses()
